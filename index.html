@@ -3,55 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>متتبع التمارين والوزن | متعدد المستخدمين - Firebase</title>
+    <title>متتبع التمارين والوزن | شامل مع الحذف</title>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Firebase v9 CDN (NEW) -->
-    <script type="module">
-        // Firebase configuration will be initialized inside module script
-        // This approach allows us to use modern Firebase SDK while keeping the rest of the code intact
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, updateDoc, query, where, orderBy, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // ========== FIREBASE CONFIGURATION (Placeholder - Replace with your own Firebase project config) ==========
-        // IMPORTANT: Create a Firebase project, enable Email/Password Auth, and Firestore.
-        // Replace these values with your own from Firebase Console.
-        const firebaseConfig = {
-            apiKey: "AIzaSyDummyKeyReplaceWithYourOwn",        // <-- REPLACE WITH YOUR API KEY
-            authDomain: "your-project-id.firebaseapp.com",    // <-- REPLACE
-            projectId: "your-project-id",                     // <-- REPLACE
-            storageBucket: "your-project-id.appspot.com",     // <-- REPLACE
-            messagingSenderId: "123456789012",                // <-- REPLACE
-            appId: "1:123456789012:web:abcdef123456"          // <-- REPLACE
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // Expose Firebase services globally so the rest of the script (non-module) can access them
-        window.fbAuth = auth;
-        window.fbDb = db;
-        window.fbSignOut = signOut;
-        window.fbOnAuthStateChanged = onAuthStateChanged;
-        window.fbCreateUser = createUserWithEmailAndPassword;
-        window.fbSignIn = signInWithEmailAndPassword;
-        window.fbCollection = collection;
-        window.fbDoc = doc;
-        window.fbAddDoc = addDoc;
-        window.fbGetDocs = getDocs;
-        window.fbDeleteDoc = deleteDoc;
-        window.fbUpdateDoc = updateDoc;
-        window.fbQuery = query;
-        window.fbWhere = where;
-        window.fbOrderBy = orderBy;
-        window.fbOnSnapshot = onSnapshot;
-        window.fbWriteBatch = writeBatch;
-    </script>
     <style>
         * {
             margin: 0;
@@ -69,92 +25,6 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
-        }
-        /* Auth UI Styles (NEW) */
-        .auth-container {
-            max-width: 450px;
-            margin: 3rem auto;
-            background: white;
-            border-radius: 2rem;
-            padding: 2rem;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.05);
-            border: 1px solid #e2edf2;
-        }
-        .auth-toggle {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid #e2edf2;
-        }
-        .auth-tab {
-            flex: 1;
-            text-align: center;
-            padding: 0.75rem;
-            cursor: pointer;
-            font-weight: 600;
-            color: #5e7c97;
-            transition: all 0.2s;
-        }
-        .auth-tab.active {
-            color: #2c7da0;
-            border-bottom: 3px solid #2c7da0;
-        }
-        .auth-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .auth-form input {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border-radius: 1rem;
-            border: 1px solid #cbdde9;
-            font-size: 0.9rem;
-        }
-        .auth-btn {
-            background: #2c7da0;
-            color: white;
-            border: none;
-            padding: 0.8rem;
-            border-radius: 2rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 0.5rem;
-        }
-        .auth-error {
-            color: #b94747;
-            font-size: 0.8rem;
-            text-align: center;
-            margin-top: 0.5rem;
-        }
-        .user-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: white;
-            border-radius: 2rem;
-            padding: 0.5rem 1rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid #e2edf2;
-        }
-        .user-email {
-            font-weight: 600;
-            color: #2c5f8a;
-        }
-        .logout-btn {
-            background: #e9f0f5;
-            border: 1px solid #cbdde9;
-            padding: 0.4rem 1rem;
-            border-radius: 2rem;
-            cursor: pointer;
-            font-size: 0.8rem;
-            color: #2c5f8a;
-        }
-        .app-content {
-            display: none;
-        }
-        .app-content.visible {
-            display: block;
         }
         .lang-switch {
             display: flex;
@@ -305,419 +175,218 @@
 </head>
 <body>
 <div class="container">
-    <!-- Auth Section (NEW) -->
-    <div id="authSection" class="auth-container">
-        <div class="auth-toggle">
-            <div id="loginTab" class="auth-tab active">تسجيل الدخول</div>
-            <div id="signupTab" class="auth-tab">إنشاء حساب</div>
+    <div class="lang-switch">
+        <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+        <button class="lang-btn active" data-lang="ar">🇸🇦 العربية</button>
+    </div>
+
+    <div class="header" style="text-align:center; margin-bottom:1.5rem;">
+        <h1><i class="fas fa-dumbbell"></i> <span class="i18n" data-key="title">متتبع التمارين والوزن</span></h1>
+        <p class="i18n" data-key="subtitle">سجل تمارينك • تتبع وزنك • حذف أي بيانات بسهولة</p>
+    </div>
+
+    <!-- Stats Dashboard -->
+    <div class="dashboard">
+        <div class="card"><div class="card-icon"><i class="fas fa-clipboard-list"></i></div><h3 class="i18n" data-key="totalWorkouts">إجمالي التمارين</h3><div class="card-value" id="totalWorkouts">0</div></div>
+        <div class="card"><div class="card-icon"><i class="fas fa-weight-hanging"></i></div><h3 class="i18n" data-key="maxWeightLift">أقصى وزن رفع</h3><div class="card-value" id="maxWeight">0</div></div>
+        <div class="card"><div class="card-icon"><i class="fas fa-chart-line"></i></div><h3 class="i18n" data-key="avgReps">متوسط التكرارات</h3><div class="card-value" id="avgReps">0</div></div>
+    </div>
+
+    <!-- Body Weight Tracker Section with Delete -->
+    <div class="weight-card">
+        <h3 style="margin-bottom:1rem;"><i class="fas fa-weight-scale"></i> <span class="i18n" data-key="bodyWeightTitle">تتبع وزن الجسم</span></h3>
+        <div class="form-grid" style="margin-bottom:1rem;">
+            <div class="form-group"><label class="i18n" data-key="weightKg">الوزن (كجم)</label><input type="number" id="bodyWeightInput" step="0.1" placeholder="مثال: 75.5"></div>
+            <div class="form-group"><label class="i18n" data-key="weightDate">التاريخ</label><input type="date" id="weightDateInput"></div>
+            <div class="form-group"><button id="addWeightBtn" class="btn-primary"><i class="fas fa-plus"></i> <span class="i18n" data-key="addWeightBtn">إضافة وزن</span></button></div>
         </div>
-        <div id="loginForm" class="auth-form">
-            <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" autocomplete="email">
-            <input type="password" id="loginPassword" placeholder="كلمة المرور" autocomplete="current-password">
-            <button id="loginBtn" class="auth-btn">دخول</button>
-            <div id="authError" class="auth-error"></div>
-        </div>
-        <div id="signupForm" class="auth-form" style="display:none;">
-            <input type="email" id="signupEmail" placeholder="البريد الإلكتروني" autocomplete="email">
-            <input type="password" id="signupPassword" placeholder="كلمة المرور" autocomplete="new-password">
-            <button id="signupBtn" class="auth-btn">إنشاء حساب</button>
-            <div id="signupError" class="auth-error"></div>
+        <canvas id="weightChart" style="max-height: 250px;"></canvas>
+        <!-- Weight entries list with delete -->
+        <div class="weight-list-container" id="weightEntriesList">
+            <h4 style="font-size:0.85rem; color:#2c5f8a; margin-bottom:8px;"><i class="fas fa-list"></i> <span class="i18n" data-key="weightHistory">سجل الأوزان السابقة</span></h4>
+            <div id="weightEntries"></div>
         </div>
     </div>
 
-    <!-- Main App Content (Protected) -->
-    <div id="appContent" class="app-content">
-        <div class="user-info">
-            <span class="user-email" id="userEmailDisplay">user@example.com</span>
-            <button id="logoutButton" class="logout-btn"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
+    <!-- Exercise Management -->
+    <div class="form-card">
+        <h3 style="margin-bottom:1rem;"><i class="fas fa-list-ul"></i> <span class="i18n" data-key="manageExercises">إدارة قائمة التمارين</span></h3>
+        <div class="exercise-manager">
+            <input type="text" id="newExerciseManage" placeholder="اسم تمرين جديد" style="flex:2;">
+            <button id="addExerciseBtn" class="btn-secondary"><i class="fas fa-plus"></i> <span class="i18n" data-key="addExercise">إضافة تمرين</span></button>
         </div>
-        <div class="lang-switch">
-            <button class="lang-btn" data-lang="en">🇬🇧 English</button>
-            <button class="lang-btn active" data-lang="ar">🇸🇦 العربية</button>
-        </div>
-
-        <div class="header" style="text-align:center; margin-bottom:1.5rem;">
-            <h1><i class="fas fa-dumbbell"></i> <span class="i18n" data-key="title">متتبع التمارين والوزن</span></h1>
-            <p class="i18n" data-key="subtitle">سجل تمارينك • تتبع وزنك • بياناتك محفوظة في السحابة</p>
-        </div>
-
-        <!-- Stats Dashboard -->
-        <div class="dashboard">
-            <div class="card"><div class="card-icon"><i class="fas fa-clipboard-list"></i></div><h3 class="i18n" data-key="totalWorkouts">إجمالي التمارين</h3><div class="card-value" id="totalWorkouts">0</div></div>
-            <div class="card"><div class="card-icon"><i class="fas fa-weight-hanging"></i></div><h3 class="i18n" data-key="maxWeightLift">أقصى وزن رفع</h3><div class="card-value" id="maxWeight">0</div></div>
-            <div class="card"><div class="card-icon"><i class="fas fa-chart-line"></i></div><h3 class="i18n" data-key="avgReps">متوسط التكرارات</h3><div class="card-value" id="avgReps">0</div></div>
-        </div>
-
-        <!-- Body Weight Tracker Section with Firestore -->
-        <div class="weight-card">
-            <h3 style="margin-bottom:1rem;"><i class="fas fa-weight-scale"></i> <span class="i18n" data-key="bodyWeightTitle">تتبع وزن الجسم</span></h3>
-            <div class="form-grid" style="margin-bottom:1rem;">
-                <div class="form-group"><label class="i18n" data-key="weightKg">الوزن (كجم)</label><input type="number" id="bodyWeightInput" step="0.1" placeholder="مثال: 75.5"></div>
-                <div class="form-group"><label class="i18n" data-key="weightDate">التاريخ</label><input type="date" id="weightDateInput"></div>
-                <div class="form-group"><button id="addWeightBtn" class="btn-primary"><i class="fas fa-plus"></i> <span class="i18n" data-key="addWeightBtn">إضافة وزن</span></button></div>
-            </div>
-            <canvas id="weightChart" style="max-height: 250px;"></canvas>
-            <div class="weight-list-container" id="weightEntriesList">
-                <h4 style="font-size:0.85rem; color:#2c5f8a; margin-bottom:8px;"><i class="fas fa-list"></i> <span class="i18n" data-key="weightHistory">سجل الأوزان السابقة</span></h4>
-                <div id="weightEntries"></div>
-            </div>
-        </div>
-
-        <!-- Exercise Management (Now stored per user) -->
-        <div class="form-card">
-            <h3 style="margin-bottom:1rem;"><i class="fas fa-list-ul"></i> <span class="i18n" data-key="manageExercises">إدارة قائمة التمارين</span></h3>
-            <div class="exercise-manager">
-                <input type="text" id="newExerciseManage" placeholder="اسم تمرين جديد" style="flex:2;">
-                <button id="addExerciseBtn" class="btn-secondary"><i class="fas fa-plus"></i> <span class="i18n" data-key="addExercise">إضافة تمرين</span></button>
-            </div>
-            <div id="exercisesList" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;"></div>
-        </div>
-
-        <!-- Add Workout Entry (Firestore) -->
-        <div class="form-card">
-            <h3 style="margin-bottom:1rem;"><i class="fas fa-plus-circle"></i> <span class="i18n" data-key="newWorkoutEntry">تسجيل تمرين جديد</span></h3>
-            <form id="workoutForm">
-                <div class="form-grid">
-                    <div class="form-group"><label class="i18n" data-key="exerciseName">التمرين</label><select id="exerciseSelect" required></select></div>
-                    <div class="form-group"><label class="i18n" data-key="setsLabel">المجموعات</label><input type="number" id="sets" value="3" min="1"></div>
-                    <div class="form-group"><label class="i18n" data-key="repsLabel">التكرارات</label><input type="number" id="reps" value="10" min="1"></div>
-                    <div class="form-group"><label class="i18n" data-key="weightLabel">الوزن (كجم)</label><input type="number" id="weight" step="0.5" value="50"></div>
-                    <div class="form-group"><label class="i18n" data-key="dateLabel">التاريخ</label><input type="date" id="workoutDate"></div>
-                    <div class="form-group"><button type="submit" class="btn-primary"><i class="fas fa-save"></i> <span class="i18n" data-key="addEntryBtn">إضافة تمرين</span></button></div>
-                </div>
-            </form>
-        </div>
-
-        <!-- Filter & Table -->
-        <div class="filter-bar" style="display:flex; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap;">
-            <div class="filter-group"><i class="fas fa-filter"></i> <label class="i18n" data-key="filterExercise">تصفية بالتمرين:</label> <select id="filterExerciseSelect" class="small-select"></select></div>
-            <div class="filter-group"><label class="i18n" data-key="chartRange">نطاق الرسم:</label><div class="range-buttons"><button data-range="all" class="btn-secondary range-btn active-range"><span class="i18n" data-key="allTime">الكل</span></button><button data-range="4w" class="btn-secondary range-btn"><span class="i18n" data-key="last4Weeks">آخر 4 أسابيع</span></button><button data-range="3m" class="btn-secondary range-btn"><span class="i18n" data-key="last3Months">آخر 3 شهور</span></button></div></div>
-        </div>
-        <div class="table-wrapper"><table id="workoutTable"><thead><tr><th class="i18n" data-key="thExercise">التمرين</th><th class="i18n" data-key="thSets">مجموعات</th><th class="i18n" data-key="thReps">تكرارات</th><th class="i18n" data-key="thWeight">الوزن</th><th class="i18n" data-key="thDate">التاريخ</th><th>إجراءات</th></tr></thead><tbody id="tableBody"><tr><td colspan="6" class="i18n" data-key="noEntries">لا توجد تمارين مسجلة</td></tr></tbody></table></div>
-
-        <div class="chart-card"><div class="chart-header" style="display:flex; justify-content:space-between;"><span><strong><i class="fas fa-chart-line"></i> <span class="i18n" data-key="progressTitle">تقدم الوزن في التمارين</span></strong> <span id="chartExerciseLabel"></span></span></div><canvas id="progressChart"></canvas></div>
-        <footer class="i18n" data-key="footer">بياناتك محفوظة في السحابة Firebase · متعدد المستخدمين وآمن</footer>
+        <div id="exercisesList" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;"></div>
     </div>
+
+    <!-- Add Workout Entry -->
+    <div class="form-card">
+        <h3 style="margin-bottom:1rem;"><i class="fas fa-plus-circle"></i> <span class="i18n" data-key="newWorkoutEntry">تسجيل تمرين جديد</span></h3>
+        <form id="workoutForm">
+            <div class="form-grid">
+                <div class="form-group"><label class="i18n" data-key="exerciseName">التمرين</label><select id="exerciseSelect" required></select></div>
+                <div class="form-group"><label class="i18n" data-key="setsLabel">المجموعات</label><input type="number" id="sets" value="3" min="1"></div>
+                <div class="form-group"><label class="i18n" data-key="repsLabel">التكرارات</label><input type="number" id="reps" value="10" min="1"></div>
+                <div class="form-group"><label class="i18n" data-key="weightLabel">الوزن (كجم)</label><input type="number" id="weight" step="0.5" value="50"></div>
+                <div class="form-group"><label class="i18n" data-key="dateLabel">التاريخ</label><input type="date" id="workoutDate"></div>
+                <div class="form-group"><button type="submit" class="btn-primary"><i class="fas fa-save"></i> <span class="i18n" data-key="addEntryBtn">إضافة تمرين</span></button></div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Filter & Table -->
+    <div class="filter-bar" style="display:flex; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap;">
+        <div class="filter-group"><i class="fas fa-filter"></i> <label class="i18n" data-key="filterExercise">تصفية بالتمرين:</label> <select id="filterExerciseSelect" class="small-select"></select></div>
+        <div class="filter-group"><label class="i18n" data-key="chartRange">نطاق الرسم:</label><div class="range-buttons"><button data-range="all" class="btn-secondary range-btn active-range"><span class="i18n" data-key="allTime">الكل</span></button><button data-range="4w" class="btn-secondary range-btn"><span class="i18n" data-key="last4Weeks">آخر 4 أسابيع</span></button><button data-range="3m" class="btn-secondary range-btn"><span class="i18n" data-key="last3Months">آخر 3 شهور</span></button></div></div>
+    </div>
+    <div class="table-wrapper"><table id="workoutTable"><thead><tr><th class="i18n" data-key="thExercise">التمرين</th><th class="i18n" data-key="thSets">مجموعات</th><th class="i18n" data-key="thReps">تكرارات</th><th class="i18n" data-key="thWeight">الوزن</th><th class="i18n" data-key="thDate">التاريخ</th><th>إجراءات</th></thead><tbody id="tableBody"><tr><td colspan="6" class="i18n" data-key="noEntries">لا توجد تمارين مسجلة</td></tr></tbody></table></div>
+
+    <!-- Progress Chart for Workouts -->
+    <div class="chart-card"><div class="chart-header" style="display:flex; justify-content:space-between;"><span><strong><i class="fas fa-chart-line"></i> <span class="i18n" data-key="progressTitle">تقدم الوزن في التمارين</span></strong> <span id="chartExerciseLabel"></span></span></div><canvas id="progressChart"></canvas></div>
+    <footer class="i18n" data-key="footer">بياناتك محفوظة محلياً · يمكنك حذف أي تمرين مسجل أو وزن جسم أو اسم تمرين من القائمة</footer>
 </div>
 
 <script>
-    // Wait for Firebase to be ready (module script loads first)
-    window.addEventListener('load', () => {
-        // ========== GLOBAL VARIABLES ==========
-        let currentUser = null;
-        let workouts = [];          // Will hold workouts from Firestore
-        let exerciseOptions = [];   // Per-user exercise list
-        let bodyWeights = [];       // Per-user body weights
-        let currentFilter = "ALL";
-        let currentRange = "all";
-        let chartInstance = null;
-        let weightChartInstance = null;
-        let currentLang = "ar";
-        let workoutsUnsubscribe = null;
-        let bodyWeightUnsubscribe = null;
-        let exercisesUnsubscribe = null;
-        let editWorkoutId = null;   // Store Firestore doc id for editing
+    // ========== STORAGE KEYS ==========
+    const STORAGE_WORKOUTS = "weekly_workouts_v3";
+    const STORAGE_EXERCISES = "workout_exercise_list_v3";
+    const STORAGE_BODY_WEIGHT = "body_weight_tracker_v3";
 
-        // DOM Elements
-        const authSection = document.getElementById('authSection');
-        const appContent = document.getElementById('appContent');
-        const userEmailSpan = document.getElementById('userEmailDisplay');
-        const logoutBtn = document.getElementById('logoutButton');
-        const loginBtn = document.getElementById('loginBtn');
-        const signupBtn = document.getElementById('signupBtn');
-        const loginTab = document.getElementById('loginTab');
-        const signupTab = document.getElementById('signupTab');
-        const loginFormDiv = document.getElementById('loginForm');
-        const signupFormDiv = document.getElementById('signupForm');
-        const authErrorDiv = document.getElementById('authError');
-        const signupErrorDiv = document.getElementById('signupError');
-        const exerciseSelect = document.getElementById("exerciseSelect");
-        const filterSelect = document.getElementById("filterExerciseSelect");
-        const tableBody = document.getElementById("tableBody");
-        const workoutForm = document.getElementById("workoutForm");
-        const exercisesListDiv = document.getElementById("exercisesList");
-        const bodyWeightInput = document.getElementById("bodyWeightInput");
-        const weightDateInput = document.getElementById("weightDateInput");
-        const addWeightBtn = document.getElementById("addWeightBtn");
-        const weightEntriesDiv = document.getElementById("weightEntries");
+    let workouts = [];
+    let exerciseOptions = [];
+    let bodyWeights = []; // [{date, weight}]
+    let currentFilter = "ALL";
+    let currentRange = "all";
+    let chartInstance = null;
+    let weightChartInstance = null;
+    let currentLang = "ar";
 
-        // ========== AUTH UI LOGIC ==========
-        loginTab.addEventListener('click', () => {
-            loginTab.classList.add('active'); signupTab.classList.remove('active');
-            loginFormDiv.style.display = 'flex'; signupFormDiv.style.display = 'none';
-            authErrorDiv.innerText = ''; signupErrorDiv.innerText = '';
-        });
-        signupTab.addEventListener('click', () => {
-            signupTab.classList.add('active'); loginTab.classList.remove('active');
-            loginFormDiv.style.display = 'none'; signupFormDiv.style.display = 'flex';
-            authErrorDiv.innerText = ''; signupErrorDiv.innerText = '';
-        });
+    // DOM Elements
+    const exerciseSelect = document.getElementById("exerciseSelect");
+    const filterSelect = document.getElementById("filterExerciseSelect");
+    const tableBody = document.getElementById("tableBody");
+    const workoutForm = document.getElementById("workoutForm");
+    const exercisesListDiv = document.getElementById("exercisesList");
+    const bodyWeightInput = document.getElementById("bodyWeightInput");
+    const weightDateInput = document.getElementById("weightDateInput");
+    const addWeightBtn = document.getElementById("addWeightBtn");
+    const weightEntriesDiv = document.getElementById("weightEntries");
 
-        // Sign Up
-        signupBtn.addEventListener('click', async () => {
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            try {
-                await window.fbCreateUser(window.fbAuth, email, password);
-                signupErrorDiv.innerText = '';
-            } catch (err) {
-                signupErrorDiv.innerText = err.message;
-            }
-        });
-
-        // Sign In
-        loginBtn.addEventListener('click', async () => {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            try {
-                await window.fbSignIn(window.fbAuth, email, password);
-                authErrorDiv.innerText = '';
-            } catch (err) {
-                authErrorDiv.innerText = err.message;
-            }
-        });
-
-        // Logout
-        logoutBtn.addEventListener('click', async () => {
-            await window.fbSignOut(window.fbAuth);
-        });
-
-        // ========== DATA HELPERS (Firestore) ==========
-        function getCurrentUserId() { return currentUser ? currentUser.uid : null; }
-
-        // Workouts CRUD
-        async function loadWorkoutsRealtime() {
-            if (workoutsUnsubscribe) workoutsUnsubscribe();
-            const userId = getCurrentUserId();
-            if (!userId) return;
-            const workoutsRef = window.fbCollection(window.fbDb, 'users', userId, 'workouts');
-            const q = window.fbQuery(workoutsRef, window.fbOrderBy('date', 'asc'));
-            workoutsUnsubscribe = window.fbOnSnapshot(q, (snapshot) => {
-                workouts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                updateDashboard();
-                renderTable();
-                updateWorkoutChart();
-            });
+    // ========== TRANSLATIONS ==========
+    const translations = {
+        ar: {
+            title: "متتبع التمارين والوزن", subtitle: "سجل تمارينك • تتبع وزنك • حذف أي بيانات بسهولة", totalWorkouts: "إجمالي التمارين", maxWeightLift: "أقصى وزن رفع", avgReps: "متوسط التكرارات",
+            bodyWeightTitle: "تتبع وزن الجسم", weightKg: "الوزن (كجم)", weightDate: "التاريخ", addWeightBtn: "إضافة وزن", manageExercises: "إدارة قائمة التمارين", addExercise: "إضافة تمرين",
+            newWorkoutEntry: "تسجيل تمرين جديد", exerciseName: "التمرين", setsLabel: "المجموعات", repsLabel: "التكرارات", weightLabel: "الوزن (كجم)", dateLabel: "التاريخ", addEntryBtn: "إضافة تمرين",
+            filterExercise: "تصفية بالتمرين:", chartRange: "نطاق الرسم:", allTime: "الكل", last4Weeks: "آخر 4 أسابيع", last3Months: "آخر 3 شهور", thExercise: "التمرين", thSets: "مجموعات", thReps: "تكرارات", thWeight: "الوزن", thDate: "التاريخ", noEntries: "لا توجد تمارين مسجلة",
+            progressTitle: "تقدم الوزن في التمارين", footer: "بياناتك محفوظة محلياً · يمكنك حذف أي تمرين مسجل أو وزن جسم أو اسم تمرين من القائمة", deleteConfirm: "هل أنت متأكد من حذف هذا التمرين من القائمة؟", deleteWeightConfirm: "هل تريد حذف هذا التسجيل؟", weightAdded: "تم إضافة وزن الجسم بنجاح", allExercises: "جميع التمارين", selectExercise: "-- اختر تمريناً --", weightHistory: "سجل الأوزان السابقة", deleteWorkoutConfirm: "هل تريد حذف هذا التمرين المسجل؟"
+        },
+        en: {
+            title: "Workout & Body Weight Tracker", subtitle: "Log workouts • Track weight • Delete any data easily", totalWorkouts: "Total Workouts", maxWeightLift: "Max Weight Lifted", avgReps: "Avg Reps",
+            bodyWeightTitle: "Body Weight Tracker", weightKg: "Weight (kg)", weightDate: "Date", addWeightBtn: "Add Weight", manageExercises: "Manage Exercise List", addExercise: "Add Exercise",
+            newWorkoutEntry: "New Workout Entry", exerciseName: "Exercise", setsLabel: "Sets", repsLabel: "Reps", weightLabel: "Weight (kg)", dateLabel: "Date", addEntryBtn: "Add Entry",
+            filterExercise: "Filter by:", chartRange: "Chart range:", allTime: "All", last4Weeks: "Last 4 Weeks", last3Months: "Last 3 Months", thExercise: "Exercise", thSets: "Sets", thReps: "Reps", thWeight: "Weight", thDate: "Date", noEntries: "No workouts recorded",
+            progressTitle: "Workout Weight Progress", footer: "Data stored locally · Delete any workout, body weight entry, or exercise name", deleteConfirm: "Delete this exercise from list?", deleteWeightConfirm: "Delete this weight record?", weightAdded: "Body weight added successfully", allExercises: "All Exercises", selectExercise: "-- Select exercise --", weightHistory: "Weight History", deleteWorkoutConfirm: "Delete this workout record?"
         }
+    };
 
-        async function addWorkoutToFirestore(exercise, sets, reps, weight, date) {
-            const userId = getCurrentUserId();
-            if (!userId) return;
-            const workoutsRef = window.fbCollection(window.fbDb, 'users', userId, 'workouts');
-            if (editWorkoutId) {
-                const workoutDoc = window.fbDoc(window.fbDb, 'users', userId, 'workouts', editWorkoutId);
-                await window.fbUpdateDoc(workoutDoc, { exercise, sets: parseInt(sets), reps: parseInt(reps), weight: parseFloat(weight), date });
-                editWorkoutId = null;
-            } else {
-                await window.fbAddDoc(workoutsRef, { exercise, sets: parseInt(sets), reps: parseInt(reps), weight: parseFloat(weight), date, createdAt: new Date().toISOString() });
-            }
-        }
+    function t(key) { return translations[currentLang][key] || key; }
+    function updateUIForLang() {
+        document.querySelectorAll('.i18n').forEach(el => { let k = el.getAttribute('data-key'); if(k) el.innerText = t(k); });
+        document.querySelectorAll('option[value="ALL"]').forEach(opt => { if(opt) opt.innerText = t('allExercises'); });
+        let firstOpt = exerciseSelect.querySelector('option[value=""]'); if(firstOpt) firstOpt.innerText = t('selectExercise');
+        renderExercisesList(); renderTable(); updateDashboard(); updateWorkoutChart(); renderWeightList();
+    }
+    function setLang(lang) { currentLang = lang; localStorage.setItem('app_lang', lang); updateUIForLang(); document.querySelectorAll('.lang-btn').forEach(btn => { btn.classList.toggle('active', btn.getAttribute('data-lang') === lang); }); }
 
-        async function deleteWorkoutFromFirestore(workoutId) {
-            const userId = getCurrentUserId();
-            if (!userId) return;
-            const workoutDoc = window.fbDoc(window.fbDb, 'users', userId, 'workouts', workoutId);
-            await window.fbDeleteDoc(workoutDoc);
-        }
+    // ========== EXERCISE MANAGEMENT ==========
+    function saveExercises() { localStorage.setItem(STORAGE_EXERCISES, JSON.stringify(exerciseOptions)); updateExerciseDropdowns(); renderExercisesList(); }
+    function updateExerciseDropdowns() {
+        let opts = `<option value="">${t('selectExercise')}</option>` + exerciseOptions.map(ex => `<option value="${escapeHtml(ex)}">${escapeHtml(ex)}</option>`).join('');
+        exerciseSelect.innerHTML = opts;
+        filterSelect.innerHTML = `<option value="ALL">${t('allExercises')}</option>` + exerciseOptions.map(ex => `<option value="${escapeHtml(ex)}">${escapeHtml(ex)}</option>`).join('');
+        filterSelect.value = currentFilter;
+    }
+    function renderExercisesList() {
+        exercisesListDiv.innerHTML = exerciseOptions.map(ex => `<span style="background:#eef2f5; padding:4px 12px; border-radius:30px; display:inline-flex; gap:6px; align-items:center;"><span>${escapeHtml(ex)}</span><button class="btn-danger delete-exercise-btn" data-ex="${escapeHtml(ex)}" style="font-size:12px;"><i class="fas fa-times-circle"></i></button></span>`).join('');
+        document.querySelectorAll('.delete-exercise-btn').forEach(btn => { btn.addEventListener('click', (e) => { let exName = btn.getAttribute('data-ex'); if(confirm(t('deleteConfirm'))) { exerciseOptions = exerciseOptions.filter(e => e !== exName); if(currentFilter === exName) currentFilter = "ALL"; saveExercises(); updateUI(); } }); });
+    }
+    function addNewExerciseToList(name) { if(name && !exerciseOptions.includes(name)) { exerciseOptions.push(name); exerciseOptions.sort(); saveExercises(); updateUI(); } }
 
-        // Body Weight CRUD
-        async function loadBodyWeightRealtime() {
-            if (bodyWeightUnsubscribe) bodyWeightUnsubscribe();
-            const userId = getCurrentUserId();
-            if (!userId) return;
-            const weightsRef = window.fbCollection(window.fbDb, 'users', userId, 'bodyWeights');
-            const q = window.fbQuery(weightsRef, window.fbOrderBy('date', 'asc'));
-            bodyWeightUnsubscribe = window.fbOnSnapshot(q, (snapshot) => {
-                bodyWeights = snapshot.docs.map(doc => ({ id: doc.id, weight: doc.data().weight, date: doc.data().date }));
-                renderWeightList();
-                renderBodyWeightChart();
-            });
-        }
+    // ========== WORKOUTS DATA ==========
+    function loadWorkouts() { const stored = localStorage.getItem(STORAGE_WORKOUTS); workouts = stored ? JSON.parse(stored) : []; }
+    function saveWorkoutsData() { localStorage.setItem(STORAGE_WORKOUTS, JSON.stringify(workouts)); updateDashboard(); renderTable(); updateWorkoutChart(); }
+    function updateDashboard() {
+        document.getElementById("totalWorkouts").innerText = workouts.length;
+        let maxW = workouts.length ? Math.max(...workouts.map(w => w.weight)) : 0;
+        let avgR = workouts.length ? (workouts.reduce((s,w)=> s + w.reps,0)/workouts.length).toFixed(1) : 0;
+        document.getElementById("maxWeight").innerText = maxW; document.getElementById("avgReps").innerText = avgR;
+    }
+    function renderTable() {
+        let filtered = currentFilter === "ALL" ? [...workouts] : workouts.filter(w => w.exercise === currentFilter);
+        filtered.sort((a,b)=> new Date(a.date) - new Date(b.date));
+        if(!filtered.length) { tableBody.innerHTML = `<tr><td colspan="6">${t('noEntries')}</td></tr>`; return; }
+        tableBody.innerHTML = filtered.map(w => `<tr>
+            <td>${escapeHtml(w.exercise)}</td>
+            <td>${w.sets}</td>
+            <td>${w.reps}</td>
+            <td>${w.weight}</td>
+            <td>${w.date}</td>
+            <td><button class="btn-edit" data-id="${w.id}"><i class="fas fa-edit"></i></button><button class="btn-danger delete-workout-btn" data-id="${w.id}"><i class="fas fa-trash"></i></button></td>
+        </tr>`).join('');
+        document.querySelectorAll('.btn-edit').forEach(btn => btn.addEventListener('click', (e) => editWorkout(parseInt(btn.getAttribute('data-id')))));
+        document.querySelectorAll('.delete-workout-btn').forEach(btn => btn.addEventListener('click', (e) => { if(confirm(t('deleteWorkoutConfirm'))) { workouts = workouts.filter(w => w.id !== parseInt(btn.getAttribute('data-id'))); saveWorkoutsData(); } }));
+    }
+    function editWorkout(id) { let w = workouts.find(w => w.id === id); if(w) { exerciseSelect.value = w.exercise; document.getElementById("sets").value = w.sets; document.getElementById("reps").value = w.reps; document.getElementById("weight").value = w.weight; document.getElementById("workoutDate").value = w.date; window.editId = id; } }
+    function addWorkout(ex, sets, reps, weight, date) { if(window.editId) { workouts = workouts.filter(w => w.id !== window.editId); window.editId = null; } let newId = Date.now(); workouts.push({ id: newId, exercise: ex, sets: parseInt(sets), reps: parseInt(reps), weight: parseFloat(weight), date: date }); saveWorkoutsData(); }
+    function updateWorkoutChart() {
+        let dataPoints = [...workouts]; if(currentFilter !== "ALL") dataPoints = dataPoints.filter(w => w.exercise === currentFilter);
+        let now = new Date(); let start = null; if(currentRange === "4w") { start = new Date(); start.setDate(now.getDate()-28); } else if(currentRange === "3m") { start = new Date(); start.setMonth(now.getMonth()-3); }
+        if(start) dataPoints = dataPoints.filter(w => new Date(w.date) >= start);
+        dataPoints.sort((a,b)=>new Date(a.date)-new Date(b.date));
+        const ctx = document.getElementById('progressChart').getContext('2d'); if(chartInstance) chartInstance.destroy();
+        if(!dataPoints.length) { ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); ctx.fillText(t('noEntries'),30,100); chartInstance=null; return; }
+        chartInstance = new Chart(ctx, { type:'line', data:{ labels: dataPoints.map(w=>w.date), datasets:[{ label:`${t('weightLabel')} - ${currentFilter === "ALL" ? t('allExercises') : currentFilter}`, data: dataPoints.map(w=>w.weight), borderColor:'#2c7da0', tension:0.2, fill:true }] }, options:{ responsive:true } });
+        document.getElementById("chartExerciseLabel").innerHTML = `(${dataPoints.length})`;
+    }
 
-        async function addBodyWeightToFirestore(weight, date) {
-            const userId = getCurrentUserId();
-            if (!userId) return;
-            const weightsRef = window.fbCollection(window.fbDb, 'users', userId, 'bodyWeights');
-            await window.fbAddDoc(weightsRef, { weight: parseFloat(weight), date });
-        }
+    // ========== BODY WEIGHT TRACKING WITH DELETE ==========
+    function loadBodyWeight() { const stored = localStorage.getItem(STORAGE_BODY_WEIGHT); bodyWeights = stored ? JSON.parse(stored) : []; renderWeightList(); renderBodyWeightChart(); }
+    function saveBodyWeight() { localStorage.setItem(STORAGE_BODY_WEIGHT, JSON.stringify(bodyWeights)); renderWeightList(); renderBodyWeightChart(); }
+    function addBodyWeight(weight, date) { if(!weight || !date) return; bodyWeights.push({ weight: parseFloat(weight), date }); bodyWeights.sort((a,b)=>new Date(a.date)-new Date(b.date)); saveBodyWeight(); alert(t('weightAdded')); }
+    function deleteBodyWeight(index) { if(confirm(t('deleteWeightConfirm'))) { bodyWeights.splice(index, 1); saveBodyWeight(); } }
+    function renderWeightList() {
+        if(!bodyWeights.length) { weightEntriesDiv.innerHTML = `<div style="color:#8aaec0; text-align:center; padding:8px;">${t('noEntries')}</div>`; return; }
+        weightEntriesDiv.innerHTML = bodyWeights.map((item, idx) => `<div class="weight-entry-item"><span><strong>${item.weight}</strong> كجم - ${item.date}</span><button class="btn-danger delete-weight-item" data-index="${idx}"><i class="fas fa-trash-alt"></i></button></div>`).join('');
+        document.querySelectorAll('.delete-weight-item').forEach(btn => { btn.addEventListener('click', (e) => { let idx = parseInt(btn.getAttribute('data-index')); deleteBodyWeight(idx); }); });
+    }
+    function renderBodyWeightChart() {
+        const ctx = document.getElementById('weightChart').getContext('2d'); if(weightChartInstance) weightChartInstance.destroy();
+        if(!bodyWeights.length) { ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); ctx.fillText(t('noEntries'),30,100); weightChartInstance=null; return; }
+        weightChartInstance = new Chart(ctx, { type:'line', data:{ labels: bodyWeights.map(w=>w.date), datasets:[{ label:t('weightKg'), data: bodyWeights.map(w=>w.weight), borderColor:'#e67e22', backgroundColor:'rgba(230,126,34,0.05)', tension:0.2, fill:true, pointBackgroundColor:'#e67e22' }] }, options:{ responsive:true, scales:{ y:{ title:{ display:true, text:'kg' } } } } });
+    }
 
-        async function deleteBodyWeightFromFirestore(weightId) {
-            const userId = getCurrentUserId();
-            if (!userId) return;
-            const weightDoc = window.fbDoc(window.fbDb, 'users', userId, 'bodyWeights', weightId);
-            await window.fbDeleteDoc(weightDoc);
-        }
+    // ========== HELPERS ==========
+    function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    function updateUI() { updateDashboard(); renderTable(); updateWorkoutChart(); renderWeightList(); renderBodyWeightChart(); renderExercisesList(); updateExerciseDropdowns(); }
 
-        // Exercise list per user
-        async function loadExercisesRealtime() {
-            if (exercisesUnsubscribe) exercisesUnsubscribe();
-            const userId = getCurrentUserId();
-            if (!userId) return;
-            const userDocRef = window.fbDoc(window.fbDb, 'users', userId);
-            exercisesUnsubscribe = window.fbOnSnapshot(userDocRef, (docSnap) => {
-                if (docSnap.exists() && docSnap.data().exercises) {
-                    exerciseOptions = docSnap.data().exercises;
-                } else {
-                    // Default exercises for new user
-                    exerciseOptions = ["ضغط البنش", "سكوات", "ديدليفت", "ضغط فوق الرأس"];
-                    saveExercisesToFirestore();
-                }
-                updateExerciseDropdowns();
-                renderExercisesList();
-            });
-        }
+    // ========== EVENT LISTENERS ==========
+    workoutForm.addEventListener('submit', (e) => { e.preventDefault(); let ex = exerciseSelect.value; if(!ex) { alert("اختر تمريناً"); return; } addWorkout(ex, document.getElementById("sets").value, document.getElementById("reps").value, document.getElementById("weight").value, document.getElementById("workoutDate").value || new Date().toISOString().slice(0,10)); workoutForm.reset(); document.getElementById("workoutDate").value = new Date().toISOString().slice(0,10); window.editId = null; });
+    document.getElementById("addExerciseBtn").addEventListener('click', () => { let newEx = document.getElementById("newExerciseManage").value.trim(); if(newEx) { addNewExerciseToList(newEx); document.getElementById("newExerciseManage").value = ""; } });
+    filterSelect.addEventListener('change', (e) => { currentFilter = e.target.value; updateUI(); });
+    document.querySelectorAll('.range-btn').forEach(btn => btn.addEventListener('click', (e) => { currentRange = btn.getAttribute('data-range'); document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active-range')); btn.classList.add('active-range'); updateWorkoutChart(); }));
+    addWeightBtn.addEventListener('click', () => { let w = bodyWeightInput.value; let d = weightDateInput.value || new Date().toISOString().slice(0,10); if(w) addBodyWeight(w, d); bodyWeightInput.value = ""; weightDateInput.value = new Date().toISOString().slice(0,10); });
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLang(btn.getAttribute('data-lang'))));
 
-        async function saveExercisesToFirestore() {
-            const userId = getCurrentUserId();
-            if (!userId) return;
-            const userDocRef = window.fbDoc(window.fbDb, 'users', userId);
-            await window.fbUpdateDoc(userDocRef, { exercises: exerciseOptions }, { merge: true });
-        }
-
-        async function addNewExerciseToList(name) {
-            if (name && !exerciseOptions.includes(name)) {
-                exerciseOptions.push(name);
-                exerciseOptions.sort();
-                await saveExercisesToFirestore();
-            }
-        }
-
-        async function deleteExerciseFromList(exName) {
-            exerciseOptions = exerciseOptions.filter(e => e !== exName);
-            if (currentFilter === exName) currentFilter = "ALL";
-            await saveExercisesToFirestore();
-            // Also remove related workouts? (Optional, but we keep workouts for history)
-            updateExerciseDropdowns();
-            renderExercisesList();
-            renderTable();
-            updateWorkoutChart();
-        }
-
-        // ========== UI RENDERING FUNCTIONS (adapted from original, but data-driven) ==========
-        function updateDashboard() {
-            document.getElementById("totalWorkouts").innerText = workouts.length;
-            let maxW = workouts.length ? Math.max(...workouts.map(w => w.weight)) : 0;
-            let avgR = workouts.length ? (workouts.reduce((s,w)=> s + w.reps,0)/workouts.length).toFixed(1) : 0;
-            document.getElementById("maxWeight").innerText = maxW; 
-            document.getElementById("avgReps").innerText = avgR;
-        }
-
-        function renderTable() {
-            let filtered = currentFilter === "ALL" ? [...workouts] : workouts.filter(w => w.exercise === currentFilter);
-            filtered.sort((a,b)=> new Date(a.date) - new Date(b.date));
-            if(!filtered.length) { tableBody.innerHTML = `<tr><td colspan="6">${t('noEntries')}</td></tr>`; return; }
-            tableBody.innerHTML = filtered.map(w => `
-                <tr>
-                    <td>${escapeHtml(w.exercise)}</td>
-                    <td>${w.sets}</td>
-                    <td>${w.reps}</td>
-                    <td>${w.weight}</td>
-                    <td>${w.date}</td>
-                    <td><button class="btn-edit" data-id="${w.id}"><i class="fas fa-edit"></i></button><button class="btn-danger delete-workout-btn" data-id="${w.id}"><i class="fas fa-trash"></i></button></td>
-                </tr>`).join('');
-            document.querySelectorAll('.btn-edit').forEach(btn => btn.addEventListener('click', async (e) => {
-                let workout = workouts.find(w => w.id === btn.getAttribute('data-id'));
-                if(workout) {
-                    exerciseSelect.value = workout.exercise;
-                    document.getElementById("sets").value = workout.sets;
-                    document.getElementById("reps").value = workout.reps;
-                    document.getElementById("weight").value = workout.weight;
-                    document.getElementById("workoutDate").value = workout.date;
-                    editWorkoutId = workout.id;
-                }
-            }));
-            document.querySelectorAll('.delete-workout-btn').forEach(btn => btn.addEventListener('click', async (e) => {
-                if(confirm(t('deleteWorkoutConfirm'))) {
-                    await deleteWorkoutFromFirestore(btn.getAttribute('data-id'));
-                }
-            }));
-        }
-
-        function updateWorkoutChart() {
-            let dataPoints = [...workouts];
-            if(currentFilter !== "ALL") dataPoints = dataPoints.filter(w => w.exercise === currentFilter);
-            let now = new Date(); let start = null;
-            if(currentRange === "4w") { start = new Date(); start.setDate(now.getDate()-28); }
-            else if(currentRange === "3m") { start = new Date(); start.setMonth(now.getMonth()-3); }
-            if(start) dataPoints = dataPoints.filter(w => new Date(w.date) >= start);
-            dataPoints.sort((a,b)=>new Date(a.date)-new Date(b.date));
-            const ctx = document.getElementById('progressChart').getContext('2d');
-            if(chartInstance) chartInstance.destroy();
-            if(!dataPoints.length) { ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); ctx.fillText(t('noEntries'),30,100); chartInstance=null; return; }
-            chartInstance = new Chart(ctx, { type:'line', data:{ labels: dataPoints.map(w=>w.date), datasets:[{ label:`${t('weightLabel')} - ${currentFilter === "ALL" ? t('allExercises') : currentFilter}`, data: dataPoints.map(w=>w.weight), borderColor:'#2c7da0', tension:0.2, fill:true }] }, options:{ responsive:true } });
-            document.getElementById("chartExerciseLabel").innerHTML = `(${dataPoints.length})`;
-        }
-
-        function renderWeightList() {
-            if(!bodyWeights.length) { weightEntriesDiv.innerHTML = `<div style="color:#8aaec0; text-align:center; padding:8px;">${t('noEntries')}</div>`; return; }
-            weightEntriesDiv.innerHTML = bodyWeights.map((item, idx) => `<div class="weight-entry-item"><span><strong>${item.weight}</strong> كجم - ${item.date}</span><button class="btn-danger delete-weight-item" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button></div>`).join('');
-            document.querySelectorAll('.delete-weight-item').forEach(btn => { btn.addEventListener('click', async (e) => { await deleteBodyWeightFromFirestore(btn.getAttribute('data-id')); }); });
-        }
-
-        function renderBodyWeightChart() {
-            const ctx = document.getElementById('weightChart').getContext('2d');
-            if(weightChartInstance) weightChartInstance.destroy();
-            if(!bodyWeights.length) { ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); ctx.fillText(t('noEntries'),30,100); weightChartInstance=null; return; }
-            weightChartInstance = new Chart(ctx, { type:'line', data:{ labels: bodyWeights.map(w=>w.date), datasets:[{ label:t('weightKg'), data: bodyWeights.map(w=>w.weight), borderColor:'#e67e22', backgroundColor:'rgba(230,126,34,0.05)', tension:0.2, fill:true }] }, options:{ responsive:true } });
-        }
-
-        function updateExerciseDropdowns() {
-            let opts = `<option value="">${t('selectExercise')}</option>` + exerciseOptions.map(ex => `<option value="${escapeHtml(ex)}">${escapeHtml(ex)}</option>`).join('');
-            exerciseSelect.innerHTML = opts;
-            filterSelect.innerHTML = `<option value="ALL">${t('allExercises')}</option>` + exerciseOptions.map(ex => `<option value="${escapeHtml(ex)}">${escapeHtml(ex)}</option>`).join('');
-            filterSelect.value = currentFilter;
-        }
-
-        function renderExercisesList() {
-            exercisesListDiv.innerHTML = exerciseOptions.map(ex => `<span style="background:#eef2f5; padding:4px 12px; border-radius:30px; display:inline-flex; gap:6px; align-items:center;"><span>${escapeHtml(ex)}</span><button class="btn-danger delete-exercise-btn" data-ex="${escapeHtml(ex)}" style="font-size:12px;"><i class="fas fa-times-circle"></i></button></span>`).join('');
-            document.querySelectorAll('.delete-exercise-btn').forEach(btn => { btn.addEventListener('click', async (e) => { let exName = btn.getAttribute('data-ex'); if(confirm(t('deleteConfirm'))) { await deleteExerciseFromList(exName); } }); });
-        }
-
-        // ========== TRANSLATION & HELPERS ==========
-        const translations = { ar: { title:"متتبع التمارين والوزن", subtitle:"سجل تمارينك • تتبع وزنك • بياناتك محفوظة في السحابة", totalWorkouts:"إجمالي التمارين", maxWeightLift:"أقصى وزن رفع", avgReps:"متوسط التكرارات", bodyWeightTitle:"تتبع وزن الجسم", weightKg:"الوزن (كجم)", weightDate:"التاريخ", addWeightBtn:"إضافة وزن", manageExercises:"إدارة قائمة التمارين", addExercise:"إضافة تمرين", newWorkoutEntry:"تسجيل تمرين جديد", exerciseName:"التمرين", setsLabel:"المجموعات", repsLabel:"التكرارات", weightLabel:"الوزن (كجم)", dateLabel:"التاريخ", addEntryBtn:"إضافة تمرين", filterExercise:"تصفية بالتمرين:", chartRange:"نطاق الرسم:", allTime:"الكل", last4Weeks:"آخر 4 أسابيع", last3Months:"آخر 3 شهور", thExercise:"التمرين", thSets:"مجموعات", thReps:"تكرارات", thWeight:"الوزن", thDate:"التاريخ", noEntries:"لا توجد تمارين مسجلة", progressTitle:"تقدم الوزن في التمارين", footer:"بياناتك محفوظة في السحابة Firebase · متعدد المستخدمين وآمن", deleteConfirm:"هل أنت متأكد من حذف هذا التمرين من القائمة؟", deleteWeightConfirm:"هل تريد حذف هذا التسجيل؟", weightAdded:"تم إضافة وزن الجسم بنجاح", allExercises:"جميع التمارين", selectExercise:"-- اختر تمريناً --", weightHistory:"سجل الأوزان السابقة", deleteWorkoutConfirm:"هل تريد حذف هذا التمرين المسجل؟" },
-        en: { title:"Workout & Body Weight Tracker", subtitle:"Log workouts • Track weight • Cloud stored", totalWorkouts:"Total Workouts", maxWeightLift:"Max Weight Lifted", avgReps:"Avg Reps", bodyWeightTitle:"Body Weight Tracker", weightKg:"Weight (kg)", weightDate:"Date", addWeightBtn:"Add Weight", manageExercises:"Manage Exercise List", addExercise:"Add Exercise", newWorkoutEntry:"New Workout Entry", exerciseName:"Exercise", setsLabel:"Sets", repsLabel:"Reps", weightLabel:"Weight (kg)", dateLabel:"Date", addEntryBtn:"Add Entry", filterExercise:"Filter by:", chartRange:"Chart range:", allTime:"All", last4Weeks:"Last 4 Weeks", last3Months:"Last 3 Months", thExercise:"Exercise", thSets:"Sets", thReps:"Reps", thWeight:"Weight", thDate:"Date", noEntries:"No workouts recorded", progressTitle:"Workout Weight Progress", footer:"Data stored in Firebase Cloud · Multi-user & secure", deleteConfirm:"Delete this exercise from list?", deleteWeightConfirm:"Delete this weight record?", weightAdded:"Body weight added successfully", allExercises:"All Exercises", selectExercise:"-- Select exercise --", weightHistory:"Weight History", deleteWorkoutConfirm:"Delete this workout record?" } };
-        function t(key) { return translations[currentLang][key] || key; }
-        function updateUIForLang() { document.querySelectorAll('.i18n').forEach(el => { let k = el.getAttribute('data-key'); if(k) el.innerText = t(k); }); updateExerciseDropdowns(); renderTable(); updateDashboard(); updateWorkoutChart(); renderWeightList(); renderExercisesList(); }
-        function setLang(lang) { currentLang = lang; localStorage.setItem('app_lang', lang); updateUIForLang(); document.querySelectorAll('.lang-btn').forEach(btn => { btn.classList.toggle('active', btn.getAttribute('data-lang') === lang); }); }
-        function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-
-        // ========== EVENT LISTENERS ==========
-        workoutForm.addEventListener('submit', async (e) => { e.preventDefault(); let ex = exerciseSelect.value; if(!ex) return; await addWorkoutToFirestore(ex, document.getElementById("sets").value, document.getElementById("reps").value, document.getElementById("weight").value, document.getElementById("workoutDate").value || new Date().toISOString().slice(0,10)); workoutForm.reset(); document.getElementById("workoutDate").value = new Date().toISOString().slice(0,10); editWorkoutId = null; });
-        document.getElementById("addExerciseBtn").addEventListener('click', async () => { let newEx = document.getElementById("newExerciseManage").value.trim(); if(newEx) { await addNewExerciseToList(newEx); document.getElementById("newExerciseManage").value = ""; } });
-        filterSelect.addEventListener('change', (e) => { currentFilter = e.target.value; renderTable(); updateWorkoutChart(); });
-        document.querySelectorAll('.range-btn').forEach(btn => btn.addEventListener('click', (e) => { currentRange = btn.getAttribute('data-range'); document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active-range')); btn.classList.add('active-range'); updateWorkoutChart(); }));
-        addWeightBtn.addEventListener('click', async () => { let w = bodyWeightInput.value; let d = weightDateInput.value || new Date().toISOString().slice(0,10); if(w) { await addBodyWeightToFirestore(w, d); alert(t('weightAdded')); } bodyWeightInput.value = ""; weightDateInput.value = new Date().toISOString().slice(0,10); });
-        document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLang(btn.getAttribute('data-lang'))));
-
-        // ========== AUTH STATE HANDLER ==========
-        window.fbOnAuthStateChanged(window.fbAuth, (user) => {
-            currentUser = user;
-            if (user) {
-                authSection.style.display = 'none';
-                appContent.classList.add('visible');
-                userEmailSpan.innerText = user.email;
-                // Load all data realtime
-                loadWorkoutsRealtime();
-                loadBodyWeightRealtime();
-                loadExercisesRealtime();
-                // Set default date values
-                document.getElementById("workoutDate").value = new Date().toISOString().slice(0,10);
-                document.getElementById("weightDateInput").value = new Date().toISOString().slice(0,10);
-                // Set language
-                let savedLang = localStorage.getItem('app_lang');
-                if(savedLang === 'en' || savedLang === 'ar') setLang(savedLang);
-                else setLang('ar');
-            } else {
-                authSection.style.display = 'block';
-                appContent.classList.remove('visible');
-                if (workoutsUnsubscribe) workoutsUnsubscribe();
-                if (bodyWeightUnsubscribe) bodyWeightUnsubscribe();
-                if (exercisesUnsubscribe) exercisesUnsubscribe();
-                workouts = []; bodyWeights = []; exerciseOptions = [];
-                editWorkoutId = null;
-            }
-        });
-    });
+    // ========== INIT ==========
+    function init() {
+        let savedLang = localStorage.getItem('app_lang'); if(savedLang === 'en' || savedLang === 'ar') currentLang = savedLang; else currentLang = 'ar';
+        const storedEx = localStorage.getItem(STORAGE_EXERCISES); exerciseOptions = storedEx ? JSON.parse(storedEx) : ["ضغط البنش", "سكوات", "ديدليفت", "ضغط فوق الرأس"];
+        loadWorkouts(); loadBodyWeight();
+        document.getElementById("workoutDate").value = new Date().toISOString().slice(0,10);
+        document.getElementById("weightDateInput").value = new Date().toISOString().slice(0,10);
+        updateExerciseDropdowns(); renderExercisesList(); updateUI(); setLang(currentLang);
+    }
+    init();
 </script>
 </body>
 </html>
